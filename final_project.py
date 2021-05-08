@@ -19,9 +19,9 @@ def read_template(filename):
 #Fungsi import & setup SMTP server
 import smtplib
 
-s = smtplib.SMTP(host="your_host_address_here", port="your_port_here")
-s.starttls()
-s.login(MY_ADDRESS, PASSWORD)
+s = smtplib.SMTP(host="smtp.gmaill.com", port=587) #host & port bisa disesuaikan sama website yg ingin digunakan
+s.starttls() #start TLS for security
+s.login(MY_ADDRESS, PASSWORD) #autentikasi
 
 names, emails = get_contacts("kontak.txt")
 message_template = read_template("message.txt")
