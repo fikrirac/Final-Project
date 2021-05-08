@@ -1,5 +1,5 @@
 import smtplib
-import os
+import getpass
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
@@ -9,7 +9,7 @@ from email import encoders
 server = "smtp.gmail.com"
 port = 587
 sender = input("Masukkan Email: ")
-password = input("Masukkan Password: ")
+password = getpass.getpass(prompt= "Masukkan Password: ", stream=None)
 message = "semoga bisa dikirim amin."
 
 #Buat dafatar kontak
@@ -27,10 +27,9 @@ msg = MIMEMultipart()
 # storing email address 
 msg['From'] = sender
 msg['Subject'] = "Final Project"
-
 for email in daftar_kontak:
     msg['To'] = email
-    
+  
 
 #body email
 body = message
@@ -54,14 +53,6 @@ for email in daftar_kontak:
     s = smtplib.SMTP(server, port)
     s.starttls()
     s.login(sender, password)
-    s.sendmail(sender, email, message)
+    text = msg.as_string()
+    s.sendmail(sender, email, text)
     s.quit()
-
-# creates SMTP session
-# s = smtplib.SMTP(server, port)
-# s.starttls()
-# s.login(sender, password)
-# text = msg.as_string()
-# s.sendmail(sender, receiver, text)
-
-# s.quit()
