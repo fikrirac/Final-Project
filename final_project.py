@@ -1,51 +1,55 @@
-#Fungsi untuk membaca kontak dari daftar
-def get_contacts(filename):
-    names = []
-    emails = []
-    with open(filename, mode="r", encoding="utf-8") as contacts_file:
-        for a_contact in contacts_file:
-            names.append(a_contact.split()[0])
-            emails.append(a_contact.split([1]))
-    return names, emails
-
-#Fungsi untuk membaca & return template file
-from string import Template
-
-def read_template(filename):
-    with open(filename, "r", encoding="utf-8") as template_file:
-        template_file_content = template_file.read()
-    return Template(template_file_content)
-
-#Fungsi import & setup SMTP server
 import smtplib
-
-s = smtplib.SMTP(host="smtp.gmaill.com", port=587) #host & port bisa disesuaikan sama website yg ingin digunakan
-s.starttls() #start TLS for security
-s.login(MY_ADDRESS, PASSWORD) #autentikasi
-
-names, emails = get_contacts("kontak.txt")
-message_template = read_template("message.txt")
-
-#import packages
+import getpass
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
 
-#Untuk tiap kontak, kirim pesan
-for name, email in zip(names, emails):
-    msg = MIMEMultipart()
+#basic
+server = "smtp.gmail.com"
+port = 587
+sender = input("Masukkan Email: ")
+pword = getpass.getpass(prompt="Masukkan Password: ", stream=None)
+message = "semoga bisa dikirim amin."
 
-    #add in the actual person name to the message
-    message = message_template.substitute(PERSON_NAME=name.title())
+#Buat dafatar kontak
+daftar_kontak = []
 
-    #setup the parameters of the message
-    msg["from"]=MY_ADDRESS
-    msg["To"]=email
-    msg['Subject']="This is TEST"
+kontak = open("kontak.txt", "r")
+for alamat in kontak:
+    line = alamat.strip()
+    list = line.split()
+    daftar_kontak.append(list)
 
-    #add in the message body
-    msg.attach(MIMEText(message, "plain"))
+# instance of MIMEMultipart
+msg = MIMEMultipart()
 
-    #send the message via the server set up earlier
-    s.send_message(msg)
+# storing email address 
+msg['From'] = sender
+msg['Subject'] = "Final Project"
 
-    del msg
+#body email
+body = message
+msg.attach(MIMEText(body, 'plain'))
+
+#attachment
+filename = "photo.jpg"
+attachment = open("D:\ML Project\Basic Python\Final-Project\photo.jpg", "rb")
+
+#encode
+p = MIMEBase('application', 'octet-stream')
+p.set_payload((attachment).read())
+encoders.encode_base64(p)
+p.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+  
+# attach the instance 'p' to instance 'msg'
+msg.attach(p)
+
+#loop untuk mengirim email sesuai daftar penerima
+for email in daftar_kontak:
+    s = smtplib.SMTP(server, port)
+    s.starttls()
+    s.login(sender, pword)
+    text = msg.as_string()
+    s.sendmail(sender, email, text)
+    s.quit()
