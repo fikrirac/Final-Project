@@ -5,14 +5,14 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
 
-#basic
+#definisi
 server = "smtp.gmail.com"
 port = 587
 sender = input("Masukkan Email: ")
 pword = getpass.getpass(prompt="Masukkan Password: ", stream=None)
-message = "semoga bisa dikirim amin."
+message = "Eid Mubarak Everyone!"
 
-#Buat dafatar kontak
+#Buat list dafatar kontak
 daftar_kontak = []
 
 kontak = open("kontak.txt", "r")
@@ -21,6 +21,7 @@ for alamat in kontak:
     list = line.split()
     daftar_kontak.append(list)
 
+#BUAT KONTEN EMAIL
 # instance of MIMEMultipart
 msg = MIMEMultipart()
 
@@ -53,3 +54,6 @@ for email in daftar_kontak:
     text = msg.as_string()
     s.sendmail(sender, email, text)
     s.quit()
+
+#Tambah email split u/ buat nama penerima 
+#buat list buat nama penerima, namanya dpt dari split email
